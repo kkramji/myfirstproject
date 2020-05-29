@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'avatar',
     ];
 
     /**
@@ -37,6 +37,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+    public static function uploadAvatar($image)
+    {
+        $filename = $image->getClientOriginalName();
+        (new self())->deleteOldImage();
+        $image->storeAs('images', $filename, 'public');
+        auth()->user()->update(['avatar' => $filename]);
+    }
+
+    protected function deleteOldImage()
+    {
+        if ($this->avatar) {
+            Storage::delete('/public/images/'.$this->avatar);
+        }
+    }
     // public function setPasswordAttribute($password)
     // {
     //     $this->attributes['password'] =  bcrypt($password);
@@ -45,4 +60,8 @@ class User extends Authenticatable
     // {
     //     return ucfirst($name);
     // }
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
 }

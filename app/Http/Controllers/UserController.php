@@ -4,11 +4,31 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function uploadAvatar(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            //     $filename = $request->image->getClientOriginalName();
+            //    $this->deleteOldImage();
+            //     $request->image->storeAs('images', $filename, 'public');
+            //     auth()->user()->update(['avatar' => $filename]);
+            // User::find(1)->update(['avatar' => $filename]);\
+            // session()->put('message', 'Image Uploaded');
+            User::uploadAvatar($request->image);
+            // $request->session()->flash('message', 'Image Uploaded');
+            return redirect()->back()->with('message', 'Upload successfully');
+        }
+        // $request->image->store('images', 'public');
+        // $request->session()->flash('error', 'Image Not Uploaded');
+        // return redirect()->back();
+        return redirect()->back()->with('error', 'Upload Not successfully');
+    }
+  
     public function index()
     {
         $data = [
@@ -35,5 +55,6 @@ class UserController extends Controller
         // $users = DB::select('select * from users');
         // return $users;
         return view('home');
+        // return redirect(route('todo.index'));
     }
 }
